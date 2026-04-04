@@ -1,1 +1,1 @@
-Git clone
+Oracle kikir
