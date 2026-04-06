@@ -11,7 +11,9 @@ import java.util.List;
 
 public class MainFrame extends JFrame {
     private JTable tabelDashboard, tabelStok;
+    // Modul 7: GUI
     private JComboBox<String> comboKategoriInput, comboKategoriSet, comboKatStok, comboSatuan;
+    // Modul 5: GUI
     private JTextField txtNamaBarang, txtNominal, txtTanggal, txtSetGlobal, txtSetKategori, txtSetAman, txtNamaStok;
     private JRadioButton radioKebutuhan, radioKeinginan;
     private JSpinner spinJumlah;
