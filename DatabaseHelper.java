@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
+// Modul 2 : Pembuatan class berisi method
 public class DatabaseHelper {
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection("jdbc:mysql://localhost:3306/lokost", "root", "");

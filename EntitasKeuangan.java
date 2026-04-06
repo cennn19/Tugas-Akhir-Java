@@ -1,4 +1,4 @@
-// MODUL 6: Penggunaan Abstrak Class
+// Modul 6: Penggunaan Abstrak Class
 public abstract class EntitasKeuangan implements ITransaksi {
 
     // Modul 4: Menyembunyikan Data

@@ -1,1 +1,1 @@
-Kembalikan IHSG
+Nooo IHSG ku

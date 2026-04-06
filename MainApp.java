@@ -2,6 +2,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class MainApp {
+    // Modul 1
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
         boolean jalan = true;
@@ -11,7 +12,7 @@ public class MainApp {
             System.out.println("1. Catat Kebutuhan");
             System.out.println("2. Catat Keinginan");
             System.out.println("3. Dashboard Laporan");
-            System.out.println("4. Atur Batas Budget"); // <-- MENU BARU
+            System.out.println("4. Atur Batas Budget"); 
             System.out.println("0. Keluar");
             System.out.print("Pilih menu: ");
             int pilihan = input.nextInt(); input.nextLine();
@@ -22,7 +23,7 @@ public class MainApp {
             } else if (pilihan == 3) {
                 try { DatabaseHelper.lihatDashboard(); } catch (Exception e) { System.out.println("Gagal: " + e.getMessage()); }
                 continue;
-            } else if (pilihan == 4) { // <-- LOGIKA MENU BARU
+            } else if (pilihan == 4) { 
                 System.out.println("\n--- ATUR BUDGET ---");
                 System.out.println("1. Budget Keseluruhan (Bulanan)");
                 System.out.println("2. Budget Per Kategori");
@@ -35,7 +36,6 @@ public class MainApp {
                         double budgetBaru = input.nextDouble();
                         DatabaseHelper.updateBudgetGlobal(budgetBaru);
                     } else if (pilBudget == 2) {
-                        // Tampilkan semua kategori dulu biar user bisa milih
                         DatabaseHelper.lihatDashboard(); 
                         System.out.print("Masukkan ID Kategori yang mau diubah: ");
                         int idKat = input.nextInt();
@@ -49,7 +49,6 @@ public class MainApp {
                 continue;
 
             } else if (pilihan == 1 || pilihan == 2) {
-                // ... (KODE CATAT KEBUTUHAN/KEINGINAN TETAP SAMA SEPERTI SEBELUMNYA) ...
                 String tipe = (pilihan == 1) ? "Kebutuhan" : "Keinginan";
                 try {
                     List<String[]> kategori = DatabaseHelper.getKategori(tipe);
@@ -64,11 +63,9 @@ public class MainApp {
                     System.out.print("Nama Barang: "); String nama = input.nextLine();
                     System.out.print("Nominal: Rp"); double nominal = input.nextDouble();
 
-                    // Polymorphism
                     EntitasKeuangan transaksi = new Pengeluaran(nama, nominal, idKat);
                     transaksi.tampilkanDetail();
                     
-                    // Eksekusi (akan memicu trigger jika limit habis)
                     transaksi.simpan(); 
 
                 } catch (Exception e) {
