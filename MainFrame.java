@@ -7,23 +7,25 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
+// Modul 4 GUI dasar
 public class MainFrame extends JFrame {
     private JTable tabelDashboard;
+    // Modul 7 GUI JComboBox
     private JComboBox<String> comboKategoriInput, comboKategoriSet;
+    // Modul 5 GUI JTextField
     private JTextField txtNamaBarang, txtNominal, txtSetGlobal, txtSetKategori, txtSetAman;
+    // Modul 6 GUI Lanjutan
     private JRadioButton radioKebutuhan, radioKeinginan;
     private List<String[]> listKategoriInput, listSemuaKategori;
 
-    // --- PALET WARNA WEB APP MODERN ---
-    private Color sidebarColor = new Color(30, 41, 59);    // Slate Dark
-    private Color sidebarHover = new Color(51, 65, 85);    // Slate Lighter
-    private Color bgColor = new Color(248, 250, 252);      // Sangat Abu-abu muda (Background Web)
-    private Color primaryColor = new Color(37, 99, 235);   // Biru Modern (Tombol Aksi)
-    private Color textColor = new Color(15, 23, 42);       // Teks Gelap
+    private Color sidebarColor = new Color(30, 41, 59);    
+    private Color sidebarHover = new Color(51, 65, 85);    
+    private Color bgColor = new Color(248, 250, 252);      
+    private Color primaryColor = new Color(37, 99, 235);  
+    private Color textColor = new Color(15, 23, 42);      
     private Font fontUtama = new Font("Segoe UI", Font.PLAIN, 14);
     private Font fontMenu = new Font("Segoe UI", Font.BOLD, 15);
 
-    // Layout Manager untuk ganti-ganti halaman
     private CardLayout cardLayout;
     private JPanel mainContentPanel;
 
@@ -34,37 +36,29 @@ public class MainFrame extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // 1. BUAT SIDEBAR (Kiri)
         JPanel sidebar = createSidebar();
         add(sidebar, BorderLayout.WEST);
 
-        // 2. BUAT MAIN CONTENT (Kanan - Pakai CardLayout)
         cardLayout = new CardLayout();
         mainContentPanel = new JPanel(cardLayout);
         mainContentPanel.setBackground(bgColor);
         mainContentPanel.setBorder(new EmptyBorder(20, 30, 20, 30));
 
-        // Masukkan halaman-halaman ke dalam CardLayout
         mainContentPanel.add(createDashboardPanel(), "Dashboard");
         mainContentPanel.add(createInputPanel(), "Input");
         mainContentPanel.add(createSettingsPanel(), "Settings");
 
         add(mainContentPanel, BorderLayout.CENTER);
         
-        // Pengecekan pengguna baru
         SwingUtilities.invokeLater(this::cekPenggunaBaru);
     }
 
-    // =========================================
-    // SIDEBAR NAVIGATION (Ala Web App)
-    // =========================================
     private JPanel createSidebar() {
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
         sidebar.setBackground(sidebarColor);
         sidebar.setPreferredSize(new Dimension(220, 0));
 
-        // Logo / Title App di Sidebar
         JLabel appTitle = new JLabel("LOKOST");
         appTitle.setFont(new Font("Segoe UI", Font.BOLD, 20));
         appTitle.setForeground(Color.WHITE);
@@ -72,7 +66,6 @@ public class MainFrame extends JFrame {
         appTitle.setBorder(new EmptyBorder(30, 10, 40, 10));
         sidebar.add(appTitle);
 
-        // Tombol-tombol Menu
         sidebar.add(createMenuButton("📊  Dashboard", "Dashboard"));
         sidebar.add(Box.createRigidArea(new Dimension(0, 10)));
         sidebar.add(createMenuButton("✍️  Catat Transaksi", "Input"));
@@ -82,7 +75,6 @@ public class MainFrame extends JFrame {
         return sidebar;
     }
 
-    // Fungsi membuat tombol menu Sidebar dengan efek Hover
     private JButton createMenuButton(String text, String cardName) {
         JButton btn = new JButton(text);
         btn.setFont(fontMenu);
@@ -94,24 +86,17 @@ public class MainFrame extends JFrame {
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         btn.setMaximumSize(new Dimension(200, 45));
         btn.setHorizontalAlignment(SwingConstants.LEFT);
-        btn.setBorder(new EmptyBorder(0, 20, 0, 0)); // Padding kiri
+        btn.setBorder(new EmptyBorder(0, 20, 0, 0)); 
 
-        // Efek Hover Ala Web
         btn.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) { btn.setBackground(sidebarHover); }
             public void mouseExited(MouseEvent e) { btn.setBackground(sidebarColor); }
         });
 
-        // Aksi klik ganti halaman CardLayout
         btn.addActionListener(e -> cardLayout.show(mainContentPanel, cardName));
         return btn;
     }
 
-    // =========================================
-    // KONTEN HALAMAN (Dimasukkan ke dalam "Card" putih)
-    // =========================================
-    
-    // Membungkus panel dalam kotak putih bersudut (Card UI)
     private JPanel createWebCard(JPanel innerPanel, String title) {
         JPanel wrapper = new JPanel(new BorderLayout());
         wrapper.setBackground(bgColor);
@@ -124,15 +109,14 @@ public class MainFrame extends JFrame {
 
         innerPanel.setBackground(Color.WHITE);
         innerPanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(226, 232, 240)), // Border tipis abu
-            new EmptyBorder(20, 20, 20, 20) // Padding dalam
+            BorderFactory.createLineBorder(new Color(226, 232, 240)), 
+            new EmptyBorder(20, 20, 20, 20) 
         ));
         wrapper.add(innerPanel, BorderLayout.CENTER);
 
         return wrapper;
     }
 
-    // PANEL 1: DASHBOARD
     private JPanel createDashboardPanel() {
         JPanel content = new JPanel(new BorderLayout(0, 15));
         
@@ -164,7 +148,6 @@ public class MainFrame extends JFrame {
         return createWebCard(content, "Ringkasan Anggaran");
     }
 
-    // PANEL 2: INPUT PENGELUARAN
     private JPanel createInputPanel() {
         JPanel content = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -201,7 +184,6 @@ public class MainFrame extends JFrame {
         radioKeinginan.addActionListener(e -> loadKategoriInput());
         btnSimpan.addActionListener(e -> simpanData());
 
-        // Bungkus content ke dalam Card supaya ke atas (tidak di tengah banget)
         JPanel wrapTop = new JPanel(new BorderLayout());
         wrapTop.setBackground(Color.WHITE);
         wrapTop.add(content, BorderLayout.NORTH);
@@ -209,33 +191,27 @@ public class MainFrame extends JFrame {
         return createWebCard(wrapTop, "Catat Pengeluaran Baru");
     }
 
-    // PANEL 3: PENGATURAN
     private JPanel createSettingsPanel() {
         JPanel content = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Global Budget
         addFormLabel(content, "Total Budget Bulanan", gbc, 0, 0);
         txtSetGlobal = createWebTextField();
         gbc.gridx = 1; gbc.gridy = 0; content.add(txtSetGlobal, gbc);
         JButton btnGlobal = styleActionBtn("Simpan");
         gbc.gridx = 2; gbc.gridy = 0; content.add(btnGlobal, gbc);
 
-        // Batas Aman
         addFormLabel(content, "Zona Peringatan Aman", gbc, 0, 1);
         txtSetAman = createWebTextField();
         gbc.gridx = 1; gbc.gridy = 1; content.add(txtSetAman, gbc);
         JButton btnAman = styleActionBtn("Simpan");
         gbc.gridx = 2; gbc.gridy = 1; content.add(btnAman, gbc);
 
-        // Separator
         gbc.gridwidth = 3; gbc.gridx = 0; gbc.gridy = 2;
         content.add(new JSeparator(), gbc);
         gbc.gridwidth = 1;
-
-        // Kategori
         addFormLabel(content, "Update Batas Kategori", gbc, 0, 3);
         comboKategoriSet = new JComboBox<>(); comboKategoriSet.setFont(fontUtama);
         gbc.gridwidth = 2; gbc.gridx = 1; gbc.gridy = 3; content.add(comboKategoriSet, gbc);
@@ -253,7 +229,6 @@ public class MainFrame extends JFrame {
             txtSetAman.setText(String.valueOf(DatabaseHelper.getBatasAman()));
         } catch (Exception ignored) {}
 
-        // Listeners
         btnGlobal.addActionListener(e -> {
             try { DatabaseHelper.updateBudgetGlobal(Double.parseDouble(txtSetGlobal.getText())); JOptionPane.showMessageDialog(this, "Tersimpan!"); refreshTabel(); } catch (Exception ex) { }
         });
@@ -273,13 +248,10 @@ public class MainFrame extends JFrame {
         return createWebCard(wrapTop, "Konfigurasi Sistem");
     }
 
-    // =========================================
-    // UTILITAS & FUNGSI DATABASE
-    // =========================================
     private void addFormLabel(JPanel panel, String text, GridBagConstraints gbc, int x, int y) {
         JLabel lbl = new JLabel(text);
         lbl.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        lbl.setForeground(new Color(100, 116, 139)); // Teks abu-abu khas label form web
+        lbl.setForeground(new Color(100, 116, 139)); 
         gbc.gridx = x; gbc.gridy = y;
         panel.add(lbl, gbc);
     }
@@ -308,7 +280,6 @@ public class MainFrame extends JFrame {
         return btn;
     }
 
-    // --- FUNGSI DB TETAP SAMA ---
     private void cekPenggunaBaru() {
         try { if (DatabaseHelper.getBudgetGlobal() == 0) JOptionPane.showMessageDialog(this, "Halo! Batas anggaranmu masih Rp 0.\nSilakan ke menu 'Pengaturan' di sidebar.", "Selamat Datang", JOptionPane.INFORMATION_MESSAGE); } catch (Exception e) {}
     }

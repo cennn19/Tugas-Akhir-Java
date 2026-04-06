@@ -1,4 +1,5 @@
 public class Pengeluaran extends EntitasKeuangan {
+    // Modul 1 Penggunaan tipe data
     private int idKategori;
 
     public Pengeluaran(String nama, double nominal, int idKategori) {
@@ -16,6 +17,7 @@ public class Pengeluaran extends EntitasKeuangan {
 
     @Override
     public void simpan() throws Exception {
+        // Modul 2 Pemanggilan Method
         DatabaseHelper.simpanPengeluaran(getNama(), getNominal(), idKategori);
     }
 }
