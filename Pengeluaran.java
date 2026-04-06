@@ -5,9 +5,8 @@ public class Pengeluaran {
     private String namaBarang;
     private double nominal;
     private int idKategori;
-    private String tanggal; // Variabel baru
+    private String tanggal;
 
-    // Constructor di-update untuk menerima tanggal
     public Pengeluaran(String namaBarang, double nominal, int idKategori, String tanggal) {
         this.namaBarang = namaBarang;
         this.nominal = nominal;
@@ -16,7 +15,6 @@ public class Pengeluaran {
     }
 
     public void simpan() throws Exception {
-        // Tambahkan kolom tanggal pada query INSERT-nya
         String sql = "INSERT INTO transaksi (nama_barang, nominal, id_kategori, tanggal) VALUES (?, ?, ?, ?)";
         
         try (Connection conn = DatabaseHelper.getConnection(); 
@@ -24,7 +22,7 @@ public class Pengeluaran {
             pstmt.setString(1, this.namaBarang);
             pstmt.setDouble(2, this.nominal);
             pstmt.setInt(3, this.idKategori);
-            pstmt.setString(4, this.tanggal); // Set nilai tanggal
+            pstmt.setString(4, this.tanggal);
             pstmt.executeUpdate();
         }
     }

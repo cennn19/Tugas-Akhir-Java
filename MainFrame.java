@@ -34,10 +34,10 @@ public class MainFrame extends JFrame {
     private Color borderColor = new Color(226, 232, 240);   
 
     // --- MODERN TYPOGRAPHY ---
-    private Font fontTitle = new Font("Poppins", Font.BOLD, 26);
-    private Font fontCardTitle = new Font("Poppins", Font.BOLD, 14);
-    private Font fontUtama = new Font("Poppins", Font.PLAIN, 15);
-    private Font fontMenu = new Font("Poppins", Font.BOLD, 14);
+    private Font fontTitle = new Font("Segoe UI", Font.BOLD, 26);
+    private Font fontCardTitle = new Font("Segoe UI", Font.BOLD, 14);
+    private Font fontUtama = new Font("Segoe UI", Font.PLAIN, 15);
+    private Font fontMenu = new Font("Segoe UI", Font.BOLD, 14);
 
     public MainFrame() {
         setTitle("LOKOST - Smart Kost Management");
@@ -64,9 +64,6 @@ public class MainFrame extends JFrame {
         SwingUtilities.invokeLater(this::cekPenggunaBaru);
     }
 
-    // =========================================
-    // CUSTOM UI COMPONENT: KARTU MEMBULAT 
-    // =========================================
     class RoundedPanel extends JPanel {
         private int radius;
         public RoundedPanel(int radius, Color bgColor) {
@@ -95,9 +92,6 @@ public class MainFrame extends JFrame {
         return wrapper;
     }
 
-    // =========================================
-    // SIDEBAR NAVIGATION (CLEAN)
-    // =========================================
     private JPanel createSidebar() {
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
@@ -117,7 +111,7 @@ public class MainFrame extends JFrame {
         sidebar.add(Box.createRigidArea(new Dimension(0, 5)));
         sidebar.add(createMenuButton("Stok Logistik", "Stok"));
         sidebar.add(Box.createRigidArea(new Dimension(0, 5)));
-        sidebar.add(createMenuButton("AI Insight", "Analitik")); 
+        sidebar.add(createMenuButton("Insight", "Analitik")); 
         sidebar.add(Box.createRigidArea(new Dimension(0, 5)));
         sidebar.add(createMenuButton("Pengaturan", "Settings"));
 
@@ -146,9 +140,6 @@ public class MainFrame extends JFrame {
         return btn;
     }
 
-    // =========================================
-    // STYLE TABEL MODERN
-    // =========================================
     private void styleModernTable(JTable table) {
         table.setFont(fontUtama); table.setRowHeight(45); table.setShowGrid(false); table.setIntercellSpacing(new Dimension(0, 0));
         table.setSelectionBackground(new Color(238, 242, 255)); table.setSelectionForeground(textDark);
@@ -161,9 +152,6 @@ public class MainFrame extends JFrame {
         table.setDefaultRenderer(Object.class, renderer);
     }
 
-    // =========================================
-    // PANEL 1: DASHBOARD
-    // =========================================
     private JPanel createDashboardPanel() {
         JPanel content = new JPanel(new BorderLayout(0, 20)); content.setOpaque(false);
         tabelDashboard = new JTable(); styleModernTable(tabelDashboard); refreshTabel(); 
@@ -179,9 +167,6 @@ public class MainFrame extends JFrame {
         return createWebCard(content, "Overview Keuangan", "Pantau sisa anggaran dan pergerakan uangmu bulan ini.");
     }
 
-    // =========================================
-    // PANEL 2: INPUT PENGELUARAN (DENGAN TANGGAL)
-    // =========================================
     private JPanel createInputPanel() {
         JPanel content = new JPanel(new GridBagLayout()); content.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints(); gbc.insets = new Insets(12, 12, 12, 12); gbc.fill = GridBagConstraints.HORIZONTAL; gbc.anchor = GridBagConstraints.WEST;
@@ -215,9 +200,6 @@ public class MainFrame extends JFrame {
         return createWebCard(wrapTop, "Catat Pengeluaran", "Masukkan detail transaksimu agar tercatat oleh sistem LOKOST.");
     }
 
-    // =========================================
-    // PANEL 3: STOK LOGISTIK (DINAMIS & SEARCH BAR)
-    // =========================================
     private JPanel createStokPanel() {
         JPanel content = new JPanel(new BorderLayout(0, 20)); content.setOpaque(false);
 
@@ -288,9 +270,6 @@ public class MainFrame extends JFrame {
         return createWebCard(content, "Logistik & Inventaris", "Pantau persediaan barang-barang kamarmu dengan mudah.");
     }
 
-    // =========================================
-    // LOGIKA UPDATE STOK DINAMIS (BISA BANYAK)
-    // =========================================
     private void prosesStokDinamis(boolean isTambah) {
         int row = tabelStok.getSelectedRow(); 
         if (row == -1) { JOptionPane.showMessageDialog(this, "Pilih barang di tabel dulu!"); return; }
@@ -326,9 +305,6 @@ public class MainFrame extends JFrame {
         } catch (Exception ex) { }
     }
 
-    // =========================================
-    // PANEL 4: ANALITIK INSIGHT 
-    // =========================================
     private JPanel createAnalitikPanel() {
         JPanel content = new JPanel(new BorderLayout(0, 20)); content.setOpaque(false);
         pnlSummaryCards = new JPanel(new GridLayout(1, 4, 20, 0)); pnlSummaryCards.setOpaque(false); content.add(pnlSummaryCards, BorderLayout.NORTH);
@@ -346,7 +322,7 @@ public class MainFrame extends JFrame {
         JScrollPane scrollChart = new JScrollPane(pnlChartBar); scrollChart.setBorder(null); scrollChart.setOpaque(false); scrollChart.getViewport().setOpaque(false);
         pnlTengah.add(scrollChart, BorderLayout.CENTER);
         content.add(pnlTengah, BorderLayout.CENTER);
-        return createWebCard(content, "Analisis & Performa", "Laporan AI pengeluaranmu selama 5 hari terakhir.");
+        return createWebCard(content, "Analisis & Performa", "Laporan pengeluaranmu selama 5 hari terakhir.");
     }
 
     private JPanel createMiniCard(String title, String value, Color valueColor) {
@@ -391,9 +367,6 @@ public class MainFrame extends JFrame {
         } catch (Exception e) { lblInsightSmarter.setText("Gagal muat analitik."); }
     }
 
-    // =========================================
-    // PANEL 5: PENGATURAN 
-    // =========================================
     private JPanel createSettingsPanel() {
         JPanel content = new JPanel(new GridBagLayout()); content.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints(); gbc.insets = new Insets(10, 10, 10, 10); gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -441,9 +414,6 @@ public class MainFrame extends JFrame {
         return createWebCard(wrapTop, "Konfigurasi Sistem", "Atur batas keuangan dan manajemen data aplikasimu.");
     }
 
-    // =========================================
-    // UTILITAS & FUNGSI UI MODERN
-    // =========================================
     private void addFormLabel(JPanel pnl, String text, GridBagConstraints gbc, int x, int y) {
         JLabel lbl = new JLabel(text); lbl.setFont(fontCardTitle); lbl.setForeground(textMuted); gbc.gridx = x; gbc.gridy = y; pnl.add(lbl, gbc);
     }
@@ -481,9 +451,6 @@ public class MainFrame extends JFrame {
     private void loadKategoriInput() { try { comboKategoriInput.removeAllItems(); listKategoriInput = DatabaseHelper.getKategori(radioKebutuhan.isSelected() ? "Kebutuhan" : "Keinginan"); for (String[] kat : listKategoriInput) comboKategoriInput.addItem(kat[1]); } catch (Exception e) {} }
     private void loadSemuaKategori() { try { comboKategoriSet.removeAllItems(); listSemuaKategori = DatabaseHelper.getAllKategori(); for (String[] kat : listSemuaKategori) comboKategoriSet.addItem(kat[1]); } catch (Exception e) {} }
 
-    // =========================================
-    // SATPAM BUDGET & SIMPAN DATA 
-    // =========================================
     private void cekPeringatanBudget(int idKat, String namaKat) {
         try {
             double[] statusKat = DatabaseHelper.getBudgetStatusKategori(idKat);
