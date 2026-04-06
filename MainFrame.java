@@ -101,7 +101,7 @@ public class MainFrame extends JFrame {
         sidebar.setBackground(sidebarColor);
         sidebar.setPreferredSize(new Dimension(240, 0));
 
-        JLabel appTitle = new JLabel("LOKOST.");
+        JLabel appTitle = new JLabel("LOKOST");
         appTitle.setFont(new Font("Segoe UI", Font.BOLD, 28));
         appTitle.setForeground(Color.WHITE);
         appTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -215,7 +215,7 @@ public class MainFrame extends JFrame {
         addFormLabel(pnlInput, "Nama Barang", gbc, 0, 0); txtNamaStok = createWebTextField(); gbc.gridx = 1; gbc.gridy = 0; pnlInput.add(txtNamaStok, gbc);
         addFormLabel(pnlInput, "Kategori", gbc, 2, 0); comboKatStok = new JComboBox<>(new String[]{"Makanan Instan", "Minuman", "Peralatan Mandi", "Kebersihan", "Obat", "Lainnya"}); comboKatStok.setFont(fontUtama); gbc.gridx = 3; gbc.gridy = 0; pnlInput.add(comboKatStok, gbc);
         addFormLabel(pnlInput, "Stok Awal", gbc, 0, 1); spinJumlah = new JSpinner(new SpinnerNumberModel(1, 0, 1000, 1)); spinJumlah.setFont(fontUtama); gbc.gridx = 1; gbc.gridy = 1; pnlInput.add(spinJumlah, gbc);
-        addFormLabel(pnlInput, "Satuan", gbc, 2, 1); comboSatuan = new JComboBox<>(new String[]{"Pcs", "Bungkus", "Botol", "Sachet", "Dus", "Lembar"}); comboSatuan.setFont(fontUtama); gbc.gridx = 3; gbc.gridy = 1; pnlInput.add(comboSatuan, gbc);
+        addFormLabel(pnlInput, "Satuan", gbc, 2, 1); comboSatuan = new JComboBox<>(new String[]{"Pcs", "Botol", "Sachet", }); comboSatuan.setFont(fontUtama); gbc.gridx = 3; gbc.gridy = 1; pnlInput.add(comboSatuan, gbc);
 
         JButton btnTambahBarang = styleActionBtn("Tambahkan Barang", textDark, sidebarHover); gbc.gridx = 3; gbc.gridy = 2; pnlInput.add(btnTambahBarang, gbc);
         content.add(pnlInput, BorderLayout.NORTH);
@@ -248,7 +248,7 @@ public class MainFrame extends JFrame {
         JPanel pnlAksi = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10)); pnlAksi.setOpaque(false);
         JButton btnPakai = styleActionBtn("Ambil (-)", new Color(245, 158, 11), new Color(217, 119, 6));
         JButton btnTambah1 = styleActionBtn("Beli (+)", new Color(16, 185, 129), new Color(5, 150, 105));
-        JButton btnHapusStok = styleActionBtn("Hapus Data", new Color(239, 68, 68), new Color(220, 38, 38));
+        JButton btnHapusStok = styleActionBtn("Hapus Barang", new Color(239, 68, 68), new Color(220, 38, 38));
 
         pnlAksi.add(btnPakai); pnlAksi.add(btnTambah1); pnlAksi.add(btnHapusStok); content.add(pnlAksi, BorderLayout.SOUTH);
 
@@ -319,7 +319,7 @@ public class MainFrame extends JFrame {
         RoundedPanel pnlInsight = new RoundedPanel(15, new Color(238, 242, 255));
         pnlInsight.setLayout(new BorderLayout(0, 10)); pnlInsight.setBorder(new EmptyBorder(20, 20, 20, 20));
         lblInsightSmarter = new JLabel("Memuat insight..."); lblInsightSmarter.setFont(fontUtama); lblInsightSmarter.setForeground(primaryHover);
-        JLabel lblHeaderInsight = new JLabel("💡 AI Smart Insight"); lblHeaderInsight.setFont(fontCardTitle); lblHeaderInsight.setForeground(primaryColor);
+        JLabel lblHeaderInsight = new JLabel("💡 Smart Insight"); lblHeaderInsight.setFont(fontCardTitle); lblHeaderInsight.setForeground(primaryColor);
         pnlInsight.add(lblHeaderInsight, BorderLayout.NORTH); pnlInsight.add(lblInsightSmarter, BorderLayout.CENTER);
 
         pnlChartBar = new JPanel(); pnlChartBar.setLayout(new BoxLayout(pnlChartBar, BoxLayout.Y_AXIS)); pnlChartBar.setOpaque(false);
@@ -386,7 +386,7 @@ public class MainFrame extends JFrame {
         GridBagConstraints gbc = new GridBagConstraints(); gbc.insets = new Insets(10, 10, 10, 10); gbc.fill = GridBagConstraints.HORIZONTAL;
 
         addFormLabel(content, "Total Budget Bulanan", gbc, 0, 0); txtSetGlobal = createWebTextField(); gbc.gridx = 1; gbc.gridy = 0; content.add(txtSetGlobal, gbc);
-        addFormLabel(content, "Batas Warning (Zona Kuning)", gbc, 0, 1); txtSetAman = createWebTextField(); gbc.gridx = 1; gbc.gridy = 1; content.add(txtSetAman, gbc);
+        addFormLabel(content, " (Zona Aman", gbc, 0, 1); txtSetAman = createWebTextField(); gbc.gridx = 1; gbc.gridy = 1; content.add(txtSetAman, gbc);
         
         JButton btnSaveGeneral = styleActionBtn("Simpan Pengaturan Umum", primaryColor, primaryHover);
         gbc.gridx = 1; gbc.gridy = 2; content.add(btnSaveGeneral, gbc);
@@ -394,12 +394,11 @@ public class MainFrame extends JFrame {
         gbc.gridwidth = 3; gbc.gridx = 0; gbc.gridy = 3; JSeparator sep = new JSeparator(); sep.setForeground(borderColor); content.add(sep, gbc); gbc.gridwidth = 1;
 
         addFormLabel(content, "Kategori Anggaran", gbc, 0, 4); comboKategoriSet = new JComboBox<>(); comboKategoriSet.setFont(fontUtama); gbc.gridwidth = 2; gbc.gridx = 1; gbc.gridy = 4; content.add(comboKategoriSet, gbc);
-        gbc.gridwidth = 1; addFormLabel(content, "Batas Baru (Rp)", gbc, 0, 5); txtSetKategori = createWebTextField(); gbc.gridx = 1; gbc.gridy = 5; content.add(txtSetKategori, gbc);
+        gbc.gridwidth = 1; addFormLabel(content, "Batas budget per kategori", gbc, 0, 5); txtSetKategori = createWebTextField(); gbc.gridx = 1; gbc.gridy = 5; content.add(txtSetKategori, gbc);
         JButton btnKat = styleActionBtn("Simpan Batas Kategori", primaryColor, primaryHover); gbc.gridx = 2; gbc.gridy = 5; content.add(btnKat, gbc);
 
         gbc.gridwidth = 3; gbc.gridx = 0; gbc.gridy = 6; JSeparator sep2 = new JSeparator(); sep2.setForeground(borderColor); content.add(sep2, gbc); gbc.gridwidth = 1;
 
-        addFormLabel(content, "Tindakan Berbahaya", gbc, 0, 7);
         JButton btnReset = styleActionBtn("RESET SEMUA DATA", new Color(220, 38, 38), new Color(185, 28, 28)); gbc.gridwidth = 2; gbc.gridx = 1; gbc.gridy = 7; content.add(btnReset, gbc);
 
         loadSemuaKategori();
