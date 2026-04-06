@@ -12,7 +12,7 @@ import java.util.List;
 public class MainFrame extends JFrame {
     private JTable tabelDashboard, tabelStok;
     private JComboBox<String> comboKategoriInput, comboKategoriSet, comboKatStok, comboSatuan;
-    private JTextField txtNamaBarang, txtNominal, txtTanggal, txtSetGlobal, txtSetKategori, txtSetAman, txtNamaStok;
+    private JTextField txtNamaBarang, txtNominal, txtSetGlobal, txtSetKategori, txtSetAman, txtNamaStok;
     private JRadioButton radioKebutuhan, radioKeinginan;
     private JSpinner spinJumlah;
     private List<String[]> listKategoriInput, listSemuaKategori;
@@ -20,18 +20,18 @@ public class MainFrame extends JFrame {
     private JLabel lblInsightSmarter;
     private CardLayout cardLayout;
     private JPanel mainContentPanel;
-    private TableRowSorter<DefaultTableModel> sorterStok; 
+    private TableRowSorter<DefaultTableModel> sorterStok;
 
     // --- PALET WARNA TAILWIND CSS (SaaS LOOK) ---
-    private Color bgBody = new Color(248, 250, 252);        
-    private Color bgCard = new Color(255, 255, 255);        
-    private Color primaryColor = new Color(79, 70, 229);    
-    private Color primaryHover = new Color(67, 56, 202);    
-    private Color sidebarColor = new Color(15, 23, 42);     
-    private Color sidebarHover = new Color(30, 41, 59);     
-    private Color textDark = new Color(15, 23, 42);         
-    private Color textMuted = new Color(100, 116, 139);     
-    private Color borderColor = new Color(226, 232, 240);   
+    private Color bgBody = new Color(248, 250, 252);
+    private Color bgCard = new Color(255, 255, 255);
+    private Color primaryColor = new Color(79, 70, 229);
+    private Color primaryHover = new Color(67, 56, 202);
+    private Color sidebarColor = new Color(15, 23, 42);
+    private Color sidebarHover = new Color(30, 41, 59);
+    private Color textDark = new Color(15, 23, 42);
+    private Color textMuted = new Color(100, 116, 139);
+    private Color borderColor = new Color(226, 232, 240);
 
     // --- MODERN TYPOGRAPHY ---
     private Font fontTitle = new Font("Segoe UI", Font.BOLD, 26);
@@ -52,18 +52,19 @@ public class MainFrame extends JFrame {
         cardLayout = new CardLayout();
         mainContentPanel = new JPanel(cardLayout);
         mainContentPanel.setBackground(bgBody);
-        mainContentPanel.setBorder(new EmptyBorder(30, 40, 30, 40)); 
+        mainContentPanel.setBorder(new EmptyBorder(30, 40, 30, 40));
 
         mainContentPanel.add(createDashboardPanel(), "Dashboard");
         mainContentPanel.add(createInputPanel(), "Input");
         mainContentPanel.add(createStokPanel(), "Stok");
-        mainContentPanel.add(createAnalitikPanel(), "Analitik"); 
+        mainContentPanel.add(createAnalitikPanel(), "Analitik");
         mainContentPanel.add(createSettingsPanel(), "Settings");
 
         add(mainContentPanel, BorderLayout.CENTER);
         SwingUtilities.invokeLater(this::cekPenggunaBaru);
     }
 
+    // --- INNER CLASS (POLYMORPHISM) ---
     class RoundedPanel extends JPanel {
         private int radius;
         public RoundedPanel(int radius, Color bgColor) {
@@ -73,7 +74,9 @@ public class MainFrame extends JFrame {
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(getBackground()); g2.fillRoundRect(0, 0, getWidth(), getHeight(), radius, radius); g2.dispose();
+            g2.setColor(getBackground()); 
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), radius, radius); 
+            g2.dispose();
             super.paintComponent(g);
         }
     }
@@ -111,7 +114,7 @@ public class MainFrame extends JFrame {
         sidebar.add(Box.createRigidArea(new Dimension(0, 5)));
         sidebar.add(createMenuButton("Stok Logistik", "Stok"));
         sidebar.add(Box.createRigidArea(new Dimension(0, 5)));
-        sidebar.add(createMenuButton("Insight", "Analitik")); 
+        sidebar.add(createMenuButton("Insight", "Analitik"));
         sidebar.add(Box.createRigidArea(new Dimension(0, 5)));
         sidebar.add(createMenuButton("Pengaturan", "Settings"));
 
@@ -120,12 +123,13 @@ public class MainFrame extends JFrame {
 
     private JButton createMenuButton(String text, String cardName) {
         JButton btn = new JButton(text);
-        btn.setFont(fontMenu); btn.setForeground(new Color(203, 213, 225)); 
-        btn.setBackground(sidebarColor); btn.setFocusPainted(false); btn.setBorderPainted(false); 
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR)); btn.setAlignmentX(Component.CENTER_ALIGNMENT); 
-        btn.setMaximumSize(new Dimension(210, 45)); btn.setHorizontalAlignment(SwingConstants.LEFT); 
+        btn.setFont(fontMenu); btn.setForeground(new Color(203, 213, 225));
+        btn.setBackground(sidebarColor); btn.setFocusPainted(false); btn.setBorderPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR)); btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btn.setMaximumSize(new Dimension(210, 45)); btn.setHorizontalAlignment(SwingConstants.LEFT);
         btn.setBorder(new EmptyBorder(0, 25, 0, 0));
 
+        // Menggunakan Abstract Class MouseAdapter
         btn.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) { btn.setBackground(sidebarHover); btn.setForeground(Color.WHITE); }
             public void mouseExited(MouseEvent e) { btn.setBackground(sidebarColor); btn.setForeground(new Color(203, 213, 225)); }
@@ -133,7 +137,7 @@ public class MainFrame extends JFrame {
 
         btn.addActionListener(e -> {
             cardLayout.show(mainContentPanel, cardName);
-            if (cardName.equals("Analitik")) refreshAnalitik(); 
+            if (cardName.equals("Analitik")) refreshAnalitik();
             if (cardName.equals("Dashboard")) refreshTabel();
             if (cardName.equals("Stok")) refreshStokTabel();
         });
@@ -152,11 +156,12 @@ public class MainFrame extends JFrame {
         table.setDefaultRenderer(Object.class, renderer);
     }
 
+    // --- PANEL DASHBOARD ---
     private JPanel createDashboardPanel() {
         JPanel content = new JPanel(new BorderLayout(0, 20)); content.setOpaque(false);
-        tabelDashboard = new JTable(); styleModernTable(tabelDashboard); refreshTabel(); 
+        tabelDashboard = new JTable(); styleModernTable(tabelDashboard); refreshTabel();
         
-        JButton btnRefresh = styleActionBtn("Segarkan Data", primaryColor, primaryHover); 
+        JButton btnRefresh = styleActionBtn("Segarkan Data", primaryColor, primaryHover);
         btnRefresh.addActionListener(e -> refreshTabel());
         
         JScrollPane scrollPane = new JScrollPane(tabelDashboard); scrollPane.setBorder(BorderFactory.createLineBorder(borderColor));
@@ -164,9 +169,11 @@ public class MainFrame extends JFrame {
         
         JPanel pnlBottom = new JPanel(new FlowLayout(FlowLayout.RIGHT)); pnlBottom.setOpaque(false); pnlBottom.add(btnRefresh);
         content.add(pnlBottom, BorderLayout.SOUTH);
-        return createWebCard(content, "Overview Keuangan", "Pantau sisa anggaran dan pergerakan uangmu bulan ini.");
+        // Deskripsi diubah karena sekarang pakai View Ringkasan Pengeluaran
+        return createWebCard(content, "Ringkasan Pengeluaran", "Laporan penggunaan anggaranmu per kategori berdasarkan database.");
     }
 
+    // --- PANEL INPUT TRANSAKSI ---
     private JPanel createInputPanel() {
         JPanel content = new JPanel(new GridBagLayout()); content.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints(); gbc.insets = new Insets(12, 12, 12, 12); gbc.fill = GridBagConstraints.HORIZONTAL; gbc.anchor = GridBagConstraints.WEST;
@@ -184,22 +191,20 @@ public class MainFrame extends JFrame {
         txtNamaBarang = createWebTextField(); gbc.gridx = 1; gbc.gridy = 2; content.add(txtNamaBarang, gbc);
 
         addFormLabel(content, "Nominal (Rp)", gbc, 0, 3);
-        txtNominal = createWebTextField(); gbc.gridx = 1; gbc.gridy = 3; content.add(txtNominal, gbc);
-
-        addFormLabel(content, "Tanggal (YYYY-MM-DD)", gbc, 0, 4);
-        txtTanggal = createWebTextField(); txtTanggal.setText(java.time.LocalDate.now().toString()); 
-        gbc.gridx = 1; gbc.gridy = 4; content.add(txtTanggal, gbc);
+        txtNominal = createWebTextField(); txtNominal.setToolTipText("Bisa pakai titik (misal: 15.000)"); 
+        gbc.gridx = 1; gbc.gridy = 3; content.add(txtNominal, gbc);
 
         JButton btnSimpan = styleActionBtn("Simpan Transaksi", primaryColor, primaryHover);
-        gbc.gridx = 1; gbc.gridy = 5; gbc.insets = new Insets(30, 12, 10, 12); content.add(btnSimpan, gbc);
+        gbc.gridx = 1; gbc.gridy = 4; gbc.insets = new Insets(30, 12, 10, 12); content.add(btnSimpan, gbc);
 
         radioKebutuhan.addActionListener(e -> loadKategoriInput()); radioKeinginan.addActionListener(e -> loadKategoriInput());
         btnSimpan.addActionListener(e -> simpanData());
 
         JPanel wrapTop = new JPanel(new BorderLayout()); wrapTop.setOpaque(false); wrapTop.add(content, BorderLayout.NORTH);
-        return createWebCard(wrapTop, "Catat Pengeluaran", "Masukkan detail transaksimu agar tercatat oleh sistem LOKOST.");
+        return createWebCard(wrapTop, "Catat Pengeluaran", "Masukkan detail transaksimu agar tercatat oleh Stored Procedure LOKOST.");
     }
 
+    // --- PANEL STOK LOGISTIK ---
     private JPanel createStokPanel() {
         JPanel content = new JPanel(new BorderLayout(0, 20)); content.setOpaque(false);
 
@@ -221,15 +226,16 @@ public class MainFrame extends JFrame {
         pnlSearch.add(lblSearch, BorderLayout.WEST); pnlSearch.add(txtSearchStok, BorderLayout.CENTER);
 
         tabelStok = new JTable(); styleModernTable(tabelStok);
-        refreshStokTabel(); 
+        refreshStokTabel();
 
+        // Penerapan Interface DocumentListener untuk live-search
         txtSearchStok.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
             public void insertUpdate(javax.swing.event.DocumentEvent e) { search(); }
             public void removeUpdate(javax.swing.event.DocumentEvent e) { search(); }
             public void changedUpdate(javax.swing.event.DocumentEvent e) { search(); }
             private void search() {
                 String text = txtSearchStok.getText();
-                if (text.trim().length() == 0) { sorterStok.setRowFilter(null); } 
+                if (text.trim().length() == 0) { sorterStok.setRowFilter(null); }
                 else { sorterStok.setRowFilter(RowFilter.regexFilter("(?i)" + text, 1)); }
             }
         });
@@ -240,9 +246,9 @@ public class MainFrame extends JFrame {
         content.add(pnlCenter, BorderLayout.CENTER);
 
         JPanel pnlAksi = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10)); pnlAksi.setOpaque(false);
-        JButton btnPakai = styleActionBtn("Ambil (-)", new Color(245, 158, 11), new Color(217, 119, 6)); 
-        JButton btnTambah1 = styleActionBtn("Beli (+)", new Color(16, 185, 129), new Color(5, 150, 105)); 
-        JButton btnHapusStok = styleActionBtn("Hapus Data", new Color(239, 68, 68), new Color(220, 38, 38)); 
+        JButton btnPakai = styleActionBtn("Ambil (-)", new Color(245, 158, 11), new Color(217, 119, 6));
+        JButton btnTambah1 = styleActionBtn("Beli (+)", new Color(16, 185, 129), new Color(5, 150, 105));
+        JButton btnHapusStok = styleActionBtn("Hapus Data", new Color(239, 68, 68), new Color(220, 38, 38));
 
         pnlAksi.add(btnPakai); pnlAksi.add(btnTambah1); pnlAksi.add(btnHapusStok); content.add(pnlAksi, BorderLayout.SOUTH);
 
@@ -251,12 +257,12 @@ public class MainFrame extends JFrame {
                 String nama = txtNamaStok.getText(); if (nama.isEmpty()) return;
                 int qtyAwal = (int) spinJumlah.getValue();
                 DatabaseHelper.tambahStok(nama, comboKatStok.getSelectedItem().toString(), qtyAwal, comboSatuan.getSelectedItem().toString());
-                txtNamaStok.setText(""); spinJumlah.setValue(1); refreshStokTabel(); 
-                catatPengeluaranDariStok(nama, qtyAwal); 
+                txtNamaStok.setText(""); spinJumlah.setValue(1); refreshStokTabel();
+                catatPengeluaranDariStok(nama, qtyAwal);
             } catch (Exception ex) { JOptionPane.showMessageDialog(this, "Gagal simpan barang!"); }
         });
 
-        btnPakai.addActionListener(e -> prosesStokDinamis(false)); 
+        btnPakai.addActionListener(e -> prosesStokDinamis(false));
         btnTambah1.addActionListener(e -> prosesStokDinamis(true));
         
         btnHapusStok.addActionListener(e -> {
@@ -271,23 +277,23 @@ public class MainFrame extends JFrame {
     }
 
     private void prosesStokDinamis(boolean isTambah) {
-        int row = tabelStok.getSelectedRow(); 
+        int row = tabelStok.getSelectedRow();
         if (row == -1) { JOptionPane.showMessageDialog(this, "Pilih barang di tabel dulu!"); return; }
         
-        int modelRow = tabelStok.convertRowIndexToModel(row); 
+        int modelRow = tabelStok.convertRowIndexToModel(row);
         try {
             int idBarang = Integer.parseInt(tabelStok.getModel().getValueAt(modelRow, 0).toString());
             String namaBarang = tabelStok.getModel().getValueAt(modelRow, 1).toString();
             
             String pesan = isTambah ? "Berapa banyak [" + namaBarang + "] yang DIBELI?" : "Berapa banyak [" + namaBarang + "] yang DIAMBIL?";
-            String input = JOptionPane.showInputDialog(this, pesan, "1"); 
+            String input = JOptionPane.showInputDialog(this, pesan, "1");
 
             if (input != null && !input.trim().isEmpty()) {
                 int qty = Integer.parseInt(input);
                 if (qty <= 0) { JOptionPane.showMessageDialog(this, "Jumlah harus lebih dari 0!"); return; }
 
                 int perubahan = isTambah ? qty : -qty;
-                DatabaseHelper.updateJumlahStok(idBarang, perubahan); 
+                DatabaseHelper.updateJumlahStok(idBarang, perubahan);
                 refreshStokTabel();
                 
                 if (!isTambah) {
@@ -298,35 +304,36 @@ public class MainFrame extends JFrame {
                     }
                 }
                 
-                if (isTambah) catatPengeluaranDariStok(namaBarang, qty); 
+                if (isTambah) catatPengeluaranDariStok(namaBarang, qty);
             }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Masukkan angka yang valid!", "Error", JOptionPane.ERROR_MESSAGE);
         } catch (Exception ex) { }
     }
 
+    // --- PANEL ANALITIK ---
     private JPanel createAnalitikPanel() {
         JPanel content = new JPanel(new BorderLayout(0, 20)); content.setOpaque(false);
         pnlSummaryCards = new JPanel(new GridLayout(1, 4, 20, 0)); pnlSummaryCards.setOpaque(false); content.add(pnlSummaryCards, BorderLayout.NORTH);
 
-        RoundedPanel pnlInsight = new RoundedPanel(15, new Color(238, 242, 255)); 
+        RoundedPanel pnlInsight = new RoundedPanel(15, new Color(238, 242, 255));
         pnlInsight.setLayout(new BorderLayout(0, 10)); pnlInsight.setBorder(new EmptyBorder(20, 20, 20, 20));
         lblInsightSmarter = new JLabel("Memuat insight..."); lblInsightSmarter.setFont(fontUtama); lblInsightSmarter.setForeground(primaryHover);
         JLabel lblHeaderInsight = new JLabel("💡 AI Smart Insight"); lblHeaderInsight.setFont(fontCardTitle); lblHeaderInsight.setForeground(primaryColor);
         pnlInsight.add(lblHeaderInsight, BorderLayout.NORTH); pnlInsight.add(lblInsightSmarter, BorderLayout.CENTER);
 
         pnlChartBar = new JPanel(); pnlChartBar.setLayout(new BoxLayout(pnlChartBar, BoxLayout.Y_AXIS)); pnlChartBar.setOpaque(false);
-        JPanel pnlTengah = new JPanel(new BorderLayout(0, 25)); pnlTengah.setOpaque(false); 
-        pnlTengah.add(pnlInsight, BorderLayout.NORTH); 
+        JPanel pnlTengah = new JPanel(new BorderLayout(0, 25)); pnlTengah.setOpaque(false);
+        pnlTengah.add(pnlInsight, BorderLayout.NORTH);
         
         JScrollPane scrollChart = new JScrollPane(pnlChartBar); scrollChart.setBorder(null); scrollChart.setOpaque(false); scrollChart.getViewport().setOpaque(false);
         pnlTengah.add(scrollChart, BorderLayout.CENTER);
         content.add(pnlTengah, BorderLayout.CENTER);
-        return createWebCard(content, "Analisis & Performa", "Laporan pengeluaranmu selama 5 hari terakhir.");
+        return createWebCard(content, "Analisis & Performa", "Laporan AI pengeluaranmu selama 5 hari terakhir.");
     }
 
     private JPanel createMiniCard(String title, String value, Color valueColor) {
-        RoundedPanel card = new RoundedPanel(15, bgBody); card.setLayout(new GridLayout(2, 1, 0, 5)); 
+        RoundedPanel card = new RoundedPanel(15, bgBody); card.setLayout(new GridLayout(2, 1, 0, 5));
         card.setBorder(new EmptyBorder(15, 20, 15, 20));
         JLabel lblTitle = new JLabel(title); lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 12)); lblTitle.setForeground(textMuted);
         JLabel lblValue = new JLabel(value); lblValue.setFont(new Font("Segoe UI", Font.BOLD, 18)); lblValue.setForeground(valueColor);
@@ -335,10 +342,14 @@ public class MainFrame extends JFrame {
 
     private void refreshAnalitik() {
         try {
-            double budget = DatabaseHelper.getBudgetGlobal(); double total = DatabaseHelper.getTotalPengeluaranGlobal(); double sisa = budget - total; double aman = DatabaseHelper.getBatasAman();
+            double budget = DatabaseHelper.getBudgetGlobal(); 
+            double total = DatabaseHelper.getTotalPengeluaranGlobal(); 
+            double sisa = budget - total; 
+            double aman = DatabaseHelper.getBatasAman();
+            
             pnlSummaryCards.removeAll();
-            pnlSummaryCards.add(createMiniCard("TOTAL TERPAKAI", String.format("Rp %,.0f", total), textDark));
-            pnlSummaryCards.add(createMiniCard("SISA BUDGET", String.format("Rp %,.0f", sisa), (sisa < 0) ? new Color(220, 38, 38) : new Color(16, 185, 129)));
+            pnlSummaryCards.add(createMiniCard("TOTAL TERPAKAI", String.format("Rp %,.0f", total).replace(",", "."), textDark));
+            pnlSummaryCards.add(createMiniCard("SISA BUDGET", String.format("Rp %,.0f", sisa).replace(",", "."), (sisa < 0) ? new Color(220, 38, 38) : new Color(16, 185, 129)));
             pnlSummaryCards.add(createMiniCard("TOP KATEGORI", DatabaseHelper.getTopCategory(), textDark));
             pnlSummaryCards.add(createMiniCard("STATUS", (sisa < 0) ? "OVERBUDGET" : (sisa <= aman) ? "WARNING" : "AMAN", (sisa < 0) ? new Color(220, 38, 38) : (sisa <= aman) ? new Color(245, 158, 11) : new Color(16, 185, 129)));
             pnlSummaryCards.revalidate(); pnlSummaryCards.repaint();
@@ -348,7 +359,7 @@ public class MainFrame extends JFrame {
             
             if (dataKat.isEmpty()) lblInsightSmarter.setText("<html>Belum ada transaksi. Keuangan stabil!</html>");
             else {
-                double pct = (Double.parseDouble(dataKat.get(0)[1]) / budget) * 100;
+                double pct = (budget > 0) ? (Double.parseDouble(dataKat.get(0)[1]) / budget) * 100 : 0;
                 String pesan = "<html>" + ((sisa < 0) ? "<b>GAWAT!</b> Kamu Overbudget. Kategori <i>" + dataKat.get(0)[0] + "</i> paling menyedot uang." : "Kondisi stabil. Namun <i>" + dataKat.get(0)[0] + "</i> memakan " + String.format("%.1f", pct) + "% budget bulananmu.");
                 String stokWarn = DatabaseHelper.getPeringatanStok();
                 if (!stokWarn.isEmpty()) pesan += "<br><br><span style='color:#ef4444;'><b>" + stokWarn + "</b></span>";
@@ -358,7 +369,9 @@ public class MainFrame extends JFrame {
                 for (java.util.Map.Entry<String, Double> e : data5Hari.entrySet()) {
                     JPanel barPnl = new JPanel(new BorderLayout(15, 0)); barPnl.setOpaque(false); barPnl.setBorder(new EmptyBorder(8, 0, 8, 0));
                     JLabel lblTgl = new JLabel(e.getKey()); lblTgl.setPreferredSize(new Dimension(100, 20)); lblTgl.setFont(fontUtama); lblTgl.setForeground(textMuted);
-                    JProgressBar bar = new JProgressBar(0, (int) max); bar.setValue(e.getValue().intValue()); bar.setStringPainted(true); bar.setString(String.format("Rp %,.0f", e.getValue())); bar.setFont(new Font("Segoe UI", Font.BOLD, 12));
+                    JProgressBar bar = new JProgressBar(0, (int) max); bar.setValue(e.getValue().intValue()); bar.setStringPainted(true); 
+                    bar.setString(String.format("Rp %,.0f", e.getValue()).replace(",", ".")); // Format titik lokal
+                    bar.setFont(new Font("Segoe UI", Font.BOLD, 12));
                     bar.setForeground(e.getValue() == 0 ? borderColor : primaryColor); bar.setBackground(bgBody); bar.setBorderPainted(false);
                     barPnl.add(lblTgl, BorderLayout.WEST); barPnl.add(bar, BorderLayout.CENTER); pnlChartBar.add(barPnl);
                 }
@@ -367,6 +380,7 @@ public class MainFrame extends JFrame {
         } catch (Exception e) { lblInsightSmarter.setText("Gagal muat analitik."); }
     }
 
+    // --- PANEL PENGATURAN ---
     private JPanel createSettingsPanel() {
         JPanel content = new JPanel(new GridBagLayout()); content.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints(); gbc.insets = new Insets(10, 10, 10, 10); gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -374,7 +388,7 @@ public class MainFrame extends JFrame {
         addFormLabel(content, "Total Budget Bulanan", gbc, 0, 0); txtSetGlobal = createWebTextField(); gbc.gridx = 1; gbc.gridy = 0; content.add(txtSetGlobal, gbc);
         addFormLabel(content, "Batas Warning (Zona Kuning)", gbc, 0, 1); txtSetAman = createWebTextField(); gbc.gridx = 1; gbc.gridy = 1; content.add(txtSetAman, gbc);
         
-        JButton btnSaveGeneral = styleActionBtn("Simpan Pengaturan Umum", primaryColor, primaryHover); 
+        JButton btnSaveGeneral = styleActionBtn("Simpan Pengaturan Umum", primaryColor, primaryHover);
         gbc.gridx = 1; gbc.gridy = 2; content.add(btnSaveGeneral, gbc);
 
         gbc.gridwidth = 3; gbc.gridx = 0; gbc.gridy = 3; JSeparator sep = new JSeparator(); sep.setForeground(borderColor); content.add(sep, gbc); gbc.gridwidth = 1;
@@ -389,21 +403,36 @@ public class MainFrame extends JFrame {
         JButton btnReset = styleActionBtn("RESET SEMUA DATA", new Color(220, 38, 38), new Color(185, 28, 28)); gbc.gridwidth = 2; gbc.gridx = 1; gbc.gridy = 7; content.add(btnReset, gbc);
 
         loadSemuaKategori();
-        try { txtSetGlobal.setText(String.valueOf(DatabaseHelper.getBudgetGlobal())); txtSetAman.setText(String.valueOf(DatabaseHelper.getBatasAman())); } catch (Exception ignored) {}
+        
+        // --- TRIK KOSMETIK FORMAT ANGKA (Menampilkan Angka) ---
+        try { 
+            txtSetGlobal.setText(String.format("%,.0f", DatabaseHelper.getBudgetGlobal()).replace(",", ".")); 
+            txtSetAman.setText(String.format("%,.0f", DatabaseHelper.getBatasAman()).replace(",", ".")); 
+        } catch (Exception ignored) {}
 
         btnSaveGeneral.addActionListener(e -> {
-            try { 
-                DatabaseHelper.updateBudgetGlobal(Double.parseDouble(txtSetGlobal.getText())); 
-                DatabaseHelper.updateBatasAman(Double.parseDouble(txtSetAman.getText())); 
-                JOptionPane.showMessageDialog(this, "Pengaturan umum berhasil diperbarui!"); refreshTabel(); 
-            } catch (Exception ex) { JOptionPane.showMessageDialog(this, "Input harus angka!"); } 
+            try {
+                // --- TRIK PEMBERSIHAN ANGKA (Menyimpan Angka) ---
+                String globalBersih = txtSetGlobal.getText().replace(".", "").replace(",", "");
+                String amanBersih = txtSetAman.getText().replace(".", "").replace(",", "");
+
+                DatabaseHelper.updateBudgetGlobal(Double.parseDouble(globalBersih));
+                DatabaseHelper.updateBatasAman(Double.parseDouble(amanBersih));
+                JOptionPane.showMessageDialog(this, "Pengaturan umum berhasil diperbarui!"); refreshTabel();
+            } catch (Exception ex) { JOptionPane.showMessageDialog(this, "Input salah! Pastikan hanya berisi angka/titik pemisah."); }
         });
 
-        btnKat.addActionListener(e -> { try { DatabaseHelper.updateBudgetKategori(Integer.parseInt(listSemuaKategori.get(comboKategoriSet.getSelectedIndex())[0]), Double.parseDouble(txtSetKategori.getText())); JOptionPane.showMessageDialog(this, "Tersimpan!"); refreshTabel(); } catch (Exception ex) {} });
+        btnKat.addActionListener(e -> { 
+            try { 
+                String katBersih = txtSetKategori.getText().replace(".", "").replace(",", "");
+                DatabaseHelper.updateBudgetKategori(Integer.parseInt(listSemuaKategori.get(comboKategoriSet.getSelectedIndex())[0]), Double.parseDouble(katBersih)); 
+                JOptionPane.showMessageDialog(this, "Tersimpan!"); refreshTabel(); txtSetKategori.setText("");
+            } catch (Exception ex) { JOptionPane.showMessageDialog(this, "Format angka kategori salah!");} 
+        });
 
         btnReset.addActionListener(e -> {
             try {
-                if (JOptionPane.showConfirmDialog(this, "Yakin hapus SEMUA data?", "Konfirmasi 1", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION && 
+                if (JOptionPane.showConfirmDialog(this, "Yakin hapus SEMUA data?", "Konfirmasi 1", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION &&
                     JOptionPane.showConfirmDialog(this, "TIDAK BISA DIBATALKAN! Lanjut?", "Konfirmasi 2", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE) == JOptionPane.YES_OPTION) {
                     DatabaseHelper.resetSemuaData(); JOptionPane.showMessageDialog(this, "Sistem Direset."); refreshTabel(); refreshStokTabel();
                 }
@@ -428,28 +457,50 @@ public class MainFrame extends JFrame {
     }
 
     private void cekPenggunaBaru() {
-        try { if (DatabaseHelper.getBudgetGlobal() == 0) {
-            String nama = JOptionPane.showInputDialog(this, "Welcome to LOKOST!\nSiapa namamu?", "Setup", JOptionPane.QUESTION_MESSAGE);
-            DatabaseHelper.updateNamaUser((nama != null && !nama.trim().isEmpty()) ? nama : "User");
-            JOptionPane.showMessageDialog(this, "Halo " + DatabaseHelper.getNamaUser() + "!\nSilakan atur budget di menu Settings.", "Welcome", JOptionPane.INFORMATION_MESSAGE); 
-        } } catch (Exception e) {}
+        try { 
+            if (DatabaseHelper.getNamaUser().equals("Pengguna Baru")) {
+                String nama = JOptionPane.showInputDialog(this, "Welcome to LOKOST!\nSiapa namamu?", "Setup", JOptionPane.QUESTION_MESSAGE);
+                if (nama != null && !nama.trim().isEmpty()) {
+                    DatabaseHelper.updateNamaUser(nama);
+                }
+                JOptionPane.showMessageDialog(this, "Halo " + DatabaseHelper.getNamaUser() + "!\nSilakan atur budget di menu Settings.", "Welcome", JOptionPane.INFORMATION_MESSAGE);
+            } 
+        } catch (Exception e) {}
     }
 
-    private void refreshTabel() { try { tabelDashboard.setModel(DatabaseHelper.getDashboardTableModel()); } catch (Exception e) {} }
-    
-    private void refreshStokTabel() { 
+    private void refreshTabel() { 
         try { 
-            if (tabelStok != null) {
-                DefaultTableModel model = DatabaseHelper.getStokTableModel();
-                tabelStok.setModel(model); 
-                sorterStok = new TableRowSorter<>(model);
-                tabelStok.setRowSorter(sorterStok);
-            }
+            // Langsung memanggil View Dashboard buatanmu
+            tabelDashboard.setModel(DatabaseHelper.getDashboardTableModel()); 
         } catch (Exception e) {} 
     }
     
-    private void loadKategoriInput() { try { comboKategoriInput.removeAllItems(); listKategoriInput = DatabaseHelper.getKategori(radioKebutuhan.isSelected() ? "Kebutuhan" : "Keinginan"); for (String[] kat : listKategoriInput) comboKategoriInput.addItem(kat[1]); } catch (Exception e) {} }
-    private void loadSemuaKategori() { try { comboKategoriSet.removeAllItems(); listSemuaKategori = DatabaseHelper.getAllKategori(); for (String[] kat : listSemuaKategori) comboKategoriSet.addItem(kat[1]); } catch (Exception e) {} }
+    private void refreshStokTabel() {
+        try {
+            if (tabelStok != null) {
+                DefaultTableModel model = DatabaseHelper.getStokTableModel();
+                tabelStok.setModel(model);
+                sorterStok = new TableRowSorter<>(model);
+                tabelStok.setRowSorter(sorterStok);
+            }
+        } catch (Exception e) {}
+    }
+    
+    private void loadKategoriInput() { 
+        try { 
+            comboKategoriInput.removeAllItems(); 
+            listKategoriInput = DatabaseHelper.getKategori(radioKebutuhan.isSelected() ? "Kebutuhan" : "Keinginan"); 
+            for (String[] kat : listKategoriInput) comboKategoriInput.addItem(kat[1]); 
+        } catch (Exception e) {} 
+    }
+    
+    private void loadSemuaKategori() { 
+        try { 
+            comboKategoriSet.removeAllItems(); 
+            listSemuaKategori = DatabaseHelper.getAllKategori(); 
+            for (String[] kat : listSemuaKategori) comboKategoriSet.addItem(kat[1]); 
+        } catch (Exception e) {} 
+    }
 
     private void cekPeringatanBudget(int idKat, String namaKat) {
         try {
@@ -476,16 +527,23 @@ public class MainFrame extends JFrame {
             int idKat = Integer.parseInt(listKategoriInput.get(comboKategoriInput.getSelectedIndex())[0]);
             String namaKat = listKategoriInput.get(comboKategoriInput.getSelectedIndex())[1];
             
-            String tglInput = txtTanggal.getText();
-            new Pengeluaran(txtNamaBarang.getText(), Double.parseDouble(txtNominal.getText()), idKat, tglInput).simpan(); 
+            // Pembersihan string angka dari titik/koma jika user mengetik 15.000
+            String nominalBersih = txtNominal.getText().replace(".", "").replace(",", "");
+            double nominalInput = Double.parseDouble(nominalBersih);
+
+            // Memanggil Stored Procedure LOKOST barumu
+            DatabaseHelper.simpanPengeluaran(txtNamaBarang.getText(), nominalInput, idKat);
             
             cekPeringatanBudget(idKat, namaKat);
             
-            JOptionPane.showMessageDialog(this, "Transaksi Tersimpan!", "Sukses", JOptionPane.INFORMATION_MESSAGE); 
-            txtNamaBarang.setText(""); txtNominal.setText(""); 
-            txtTanggal.setText(java.time.LocalDate.now().toString()); 
-            refreshTabel(); 
-        } catch (Exception ex) { JOptionPane.showMessageDialog(this, ex.getMessage(), "ALARM", JOptionPane.ERROR_MESSAGE); }
+            JOptionPane.showMessageDialog(this, "Transaksi Tersimpan melalui Stored Procedure!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+            txtNamaBarang.setText(""); txtNominal.setText("");
+            refreshTabel();
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Input Nominal harus berupa angka!", "ALARM", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception ex) { 
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "ALARM", JOptionPane.ERROR_MESSAGE); 
+        }
     }
 
     private void catatPengeluaranDariStok(String namaBarang, int qty) {
@@ -494,24 +552,24 @@ public class MainFrame extends JFrame {
                 List<String[]> listKat = DatabaseHelper.getAllKategori();
                 String[] namaKat = new String[listKat.size()]; for(int i=0; i<listKat.size(); i++) namaKat[i] = listKat.get(i)[1];
                 JComboBox<String> cbKat = new JComboBox<>(namaKat); cbKat.setFont(fontUtama);
-                JTextField txtHarga = createWebTextField();
-                
-                JTextField txtTglPop = createWebTextField();
-                txtTglPop.setText(java.time.LocalDate.now().toString());
+                JTextField txtHarga = createWebTextField(); txtHarga.setToolTipText("Bisa pakai titik (misal: 15.000)");
                 
                 Object[] popForm = {
-                    "Tanggal Beli (YYYY-MM-DD):", txtTglPop,
-                    "Pilih Kategori:", cbKat, 
-                    "Total Harga Beli (Untuk " + qty + " items):", txtHarga 
+                    "Pilih Kategori Database:", cbKat,
+                    "Total Harga Beli (Untuk " + qty + " items):", txtHarga
                 };
                 
                 if (JOptionPane.showConfirmDialog(this, popForm, "Catat Kas", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
                     int idKat = Integer.parseInt(listKat.get(cbKat.getSelectedIndex())[0]);
                     String namaKategoriTerpilih = listKat.get(cbKat.getSelectedIndex())[1];
 
-                    new Pengeluaran(namaBarang, Double.parseDouble(txtHarga.getText()), idKat, txtTglPop.getText()).simpan();
+                    // Bersihkan titik sebelum disimpan
+                    String hargaBersih = txtHarga.getText().replace(".", "").replace(",", "");
+                    double nominalInput = Double.parseDouble(hargaBersih);
+
+                    DatabaseHelper.simpanPengeluaran(namaBarang, nominalInput, idKat);
                     cekPeringatanBudget(idKat, namaKategoriTerpilih);
-                    refreshTabel(); 
+                    refreshTabel();
                 }
             } catch (Exception ex) { JOptionPane.showMessageDialog(this, "Error Input Harga!", "Error", JOptionPane.ERROR_MESSAGE); }
         }
