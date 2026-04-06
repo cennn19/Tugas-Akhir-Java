@@ -1,1 +1,1 @@
-Oracle kikir
+Kembalikan IHSG
