@@ -330,4 +330,54 @@ public class DatabaseHelper {
         }
         return new double[]{0, 0, 0};
     }
+
+    // Method baru untuk validasi logika alokasi budget
+    public static double hitungSisaBudgetUntukKategori(int idKategoriDikecualikan) throws Exception {
+        // Jumlahkan semua batas_anggaran, KECUALI kategori yang sedang mau di-edit ini
+        String sql = "SELECT COALESCE(SUM(batas_anggaran), 0) FROM kategori WHERE id != ?";
+        try (Connection conn = getConnection(); java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, idKategoriDikecualikan);
+            java.sql.ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) return rs.getDouble(1);
+        }
+        return 0;
+    }
+
+    // =========================================
+    // METHOD UNTUK TAB HISTORI KESELURUHAN
+    // =========================================
+
+    public static DefaultTableModel getHistoriTableModel() throws Exception {
+        String[] kolom = {"ID", "Tanggal", "Kategori", "Nama Transaksi", "Nominal"};
+        DefaultTableModel model = new DefaultTableModel(kolom, 0) {
+            @Override // Bikin tabel gak bisa diedit manual
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
+
+        // Ambil semua data dari transaksi, gabungkan dengan nama kategori, urutkan dari yang paling baru
+        String query = "SELECT t.id, t.tanggal, k.nama_kategori, t.nama_barang, t.nominal " +
+                       "FROM transaksi t JOIN kategori k ON t.id_kategori = k.id " +
+                       "ORDER BY t.tanggal DESC, t.id DESC";
+
+        try (Connection conn = getConnection(); java.sql.Statement stmt = conn.createStatement(); java.sql.ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getInt("id"),
+                    rs.getString("tanggal"),
+                    rs.getString("nama_kategori"),
+                    rs.getString("nama_barang"),
+                    "Rp " + String.format("%,.0f", rs.getDouble("nominal")).replace(",", ".")
+                });
+            }
+        }
+        return model;
+    }
+
+    public static void hapusTransaksi(int idTransaksi) throws Exception {
+        String sql = "DELETE FROM transaksi WHERE id = ?";
+        try (Connection conn = getConnection(); java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, idTransaksi);
+            pstmt.executeUpdate();
+        }
+    }
 }
