@@ -1,1 +1,1 @@
-zayaaa
+Nooo IHSG ku
