@@ -36,7 +36,7 @@ public class DatabaseHelper {
         }
     }
 
-    // Method baru untuk GUI: Mengambil data View dan mengubahnya jadi Model Tabel
+    // Method untuk GUI: Mengambil data View dan mengubahnya jadi Model Tabel
     public static DefaultTableModel getDashboardTableModel() throws Exception {
         String[] kolom = {"Nama Kategori", "Tipe", "Batas Anggaran", "Terpakai", "Sisa Anggaran"};
         DefaultTableModel model = new DefaultTableModel(kolom, 0);
@@ -141,5 +141,192 @@ public class DatabaseHelper {
             if (rs.next()) return rs.getDouble(1);
         }
         return 0;
+    }
+
+    // Method untuk mengambil kategori paling banyak pengeluarannya
+    public static String getTopCategory() throws Exception {
+        String sql = "SELECT k.nama_kategori FROM transaksi t " +
+                     "JOIN kategori k ON t.id_kategori = k.id " +
+                     "GROUP BY k.id ORDER BY SUM(t.nominal) DESC LIMIT 1";
+        try (Connection conn = getConnection(); java.sql.Statement stmt = conn.createStatement(); java.sql.ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) return rs.getString(1);
+        }
+        return "Belum Ada Transaksi";
+    }
+
+    public static void resetSemuaData() throws Exception {
+        String sql = "{CALL sp_reset_seluruh_data()}";
+        try (Connection conn = getConnection(); CallableStatement stmt = conn.prepareCall(sql)) {
+            stmt.execute();
+        }
+    }
+
+    // Ambil nama user
+    public static String getNamaUser() throws Exception {
+        String sql = "SELECT nama_user FROM pengaturan WHERE id = 1";
+        try (Connection conn = getConnection(); java.sql.Statement stmt = conn.createStatement(); java.sql.ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                String nama = rs.getString("nama_user");
+                return (nama == null || nama.trim().isEmpty()) ? "Pengguna Baru" : nama;
+            }
+        }
+        return "Pengguna Baru";
+    }
+
+    // Simpan nama user
+    public static void updateNamaUser(String nama) throws Exception {
+        String sql = "UPDATE pengaturan SET nama_user = ? WHERE id = 1";
+        try (Connection conn = getConnection(); java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, nama);
+            pstmt.executeUpdate();
+        }
+    }
+
+    // =========================================
+    // METHOD UNTUK TAB ANALITIK INSIGHT
+    // =========================================
+
+    // 1. Ambil data pengeluaran 7 hari terakhir per kategori (Untuk Teks Insight AI)
+    public static List<String[]> getAnalitik7Hari() throws Exception {
+        List<String[]> list = new ArrayList<>();
+        String sql = "SELECT k.nama_kategori, COALESCE(SUM(t.nominal), 0) as total " +
+                     "FROM kategori k LEFT JOIN transaksi t ON k.id = t.id_kategori " +
+                     "AND t.tanggal >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) " +
+                     "GROUP BY k.id ORDER BY total DESC";
+        
+        try (Connection conn = getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                // Hanya masukkan yang totalnya lebih dari 0 supaya insightnya akurat
+                if (rs.getDouble("total") > 0) {
+                    list.add(new String[]{rs.getString("nama_kategori"), String.valueOf(rs.getDouble("total"))});
+                }
+            }
+        }
+        return list;
+    }
+
+    // 2. Ambil data pengeluaran 5 HARI TERAKHIR (Berdasarkan Tanggal untuk Grafik Batang)
+    public static java.util.Map<String, Double> getPengeluaran5Hari() throws Exception {
+        java.util.Map<String, Double> dataHarian = new java.util.LinkedHashMap<>();
+        
+        // Siapkan 5 tanggal terakhir
+        java.time.LocalDate hariIni = java.time.LocalDate.now();
+        java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        
+        for (int i = 4; i >= 0; i--) {
+            dataHarian.put(hariIni.minusDays(i).format(fmt), 0.0);
+        }
+
+        // Timpa dengan data asli dari database jika ada transaksi
+        String sql = "SELECT tanggal, SUM(nominal) as total FROM transaksi " +
+                     "WHERE tanggal >= DATE_SUB(CURDATE(), INTERVAL 4 DAY) " +
+                     "GROUP BY tanggal";
+                     
+        try (Connection conn = getConnection(); java.sql.Statement stmt = conn.createStatement(); java.sql.ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                String tgl = rs.getString("tanggal");
+                if (dataHarian.containsKey(tgl)) {
+                    dataHarian.put(tgl, rs.getDouble("total"));
+                }
+            }
+        }
+        return dataHarian;
+    }
+
+    // =========================================
+    // METHOD UNTUK CRUD STOK LOGISTIK BARANG
+    // =========================================
+
+    // 1. READ: Ambil data untuk Tabel Stok
+    public static DefaultTableModel getStokTableModel() throws Exception {
+        String[] kolom = {"ID", "Nama Barang", "Kategori", "Jumlah", "Satuan", "Status"};
+        DefaultTableModel model = new DefaultTableModel(kolom, 0) {
+            @Override // Bikin tabel gak bisa diedit manual dengan klik ganda
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
+        
+        String sql = "SELECT * FROM stok_barang ORDER BY nama_barang ASC";
+        try (Connection conn = getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                int jumlah = rs.getInt("jumlah");
+                String status = (jumlah == 0) ? "HABIS ❌" : (jumlah <= 2) ? "MENIPIS ⚠️" : "AMAN ✅";
+                
+                model.addRow(new Object[]{
+                    rs.getInt("id"), rs.getString("nama_barang"), rs.getString("kategori_barang"),
+                    jumlah, rs.getString("satuan"), status
+                });
+            }
+        }
+        return model;
+    }
+
+    // 2. CREATE: Tambah Barang Baru
+    public static void tambahStok(String nama, String kategori, int jumlah, String satuan) throws Exception {
+        String sql = "INSERT INTO stok_barang (nama_barang, kategori_barang, jumlah, satuan) VALUES (?, ?, ?, ?)";
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, nama); pstmt.setString(2, kategori);
+            pstmt.setInt(3, jumlah); pstmt.setString(4, satuan);
+            pstmt.executeUpdate();
+        }
+    }
+
+    // 3. UPDATE: Ubah Jumlah (+1 atau -1)
+    public static void updateJumlahStok(int id, int perubahan) throws Exception {
+        // perubahan bisa angka 1 (tambah) atau -1 (kurangi)
+        String sql = "UPDATE stok_barang SET jumlah = jumlah + (?) WHERE id = ? AND (jumlah + (?) >= 0)";
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, perubahan); pstmt.setInt(2, id); pstmt.setInt(3, perubahan);
+            pstmt.executeUpdate();
+        }
+    }
+
+    // 4. DELETE: Hapus Barang dari daftar
+    public static void hapusStok(int id) throws Exception {
+        String sql = "DELETE FROM stok_barang WHERE id = ?";
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id); pstmt.executeUpdate();
+        }
+    }
+
+    // Radar Pendeteksi Stok Menipis (Untuk AI Insight)
+    public static String getPeringatanStok() throws Exception {
+        java.util.List<String> barangMenipis = new java.util.ArrayList<>();
+        String sql = "SELECT nama_barang FROM stok_barang WHERE jumlah <= 2";
+        try (Connection conn = getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                barangMenipis.add(rs.getString("nama_barang"));
+            }
+        }
+        if (barangMenipis.isEmpty()) return "";
+        return "📦 PERINGATAN LOGISTIK: " + String.join(", ", barangMenipis) + " sudah menipis/habis!";
+    }
+
+    // Method untuk mengecek sisa stok barang secara real-time
+    public static int getSisaStok(int idBarang) throws Exception {
+        String sql = "SELECT jumlah FROM stok_barang WHERE id = ?";
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, idBarang);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) return rs.getInt("jumlah");
+        }
+        return 0;
+    }
+
+    // Method baru untuk cek status budget per kategori
+    public static double[] getBudgetStatusKategori(int idKategori) throws Exception {
+        // Mengembalikan array: [Batas, Terpakai, Sisa]
+        String sql = "SELECT k.batas_anggaran, COALESCE(SUM(t.nominal), 0) as terpakai " +
+                     "FROM kategori k LEFT JOIN transaksi t ON k.id = t.id_kategori " +
+                     "WHERE k.id = ? GROUP BY k.id";
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, idKategori);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                double batas = rs.getDouble("batas_anggaran");
+                double terpakai = rs.getDouble("terpakai");
+                return new double[]{batas, terpakai, batas - terpakai};
+            }
+        }
+        return new double[]{0, 0, 0};
     }
 }
