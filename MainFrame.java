@@ -40,7 +40,7 @@ public class MainFrame extends JFrame {
     private Font fontMenu = new Font("Segoe UI", Font.BOLD, 14);
 
     public MainFrame() {
-        setTitle("LOKOST - Smart Kost Management");
+        setTitle("LOKOST - Logistik Kost");
         setSize(1050, 720);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -111,7 +111,7 @@ public class MainFrame extends JFrame {
         sidebar.add(Box.createRigidArea(new Dimension(0, 5)));
         sidebar.add(createMenuButton("Stok Logistik", "Stok"));
         sidebar.add(Box.createRigidArea(new Dimension(0, 5)));
-        sidebar.add(createMenuButton("Insight", "Analitik")); 
+        sidebar.add(createMenuButton("Insight & Histori", "Analitik")); 
         sidebar.add(Box.createRigidArea(new Dimension(0, 5)));
         sidebar.add(createMenuButton("Pengaturan", "Settings"));
 
@@ -198,7 +198,7 @@ public class MainFrame extends JFrame {
         btnSimpan.addActionListener(e -> simpanData());
 
         JPanel wrapTop = new JPanel(new BorderLayout()); wrapTop.setOpaque(false); wrapTop.add(content, BorderLayout.NORTH);
-        return createWebCard(wrapTop, "Catat Pengeluaran", "Masukkan detail transaksimu agar tercatat oleh sistem LOKOST.");
+        return createWebCard(wrapTop, "Catat Transaksi", "Masukkan detail transaksimu agar tercatat oleh sistem LOKOST.");
     }
 
     private JPanel createStokPanel() {
@@ -254,7 +254,11 @@ public class MainFrame extends JFrame {
                 DatabaseHelper.tambahStok(nama, comboKatStok.getSelectedItem().toString(), qtyAwal, comboSatuan.getSelectedItem().toString());
                 txtNamaStok.setText(""); spinJumlah.setValue(1); refreshStokTabel(); 
                 catatPengeluaranDariStok(nama, qtyAwal); 
-            } catch (Exception ex) { JOptionPane.showMessageDialog(this, "Gagal simpan barang!"); }
+            } catch (Exception ex) { 
+                // ERROR SCANNER DITAMBAHKAN DI SINI
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Gagal simpan barang!\nDetail: " + ex.getMessage(), "Error Database", JOptionPane.ERROR_MESSAGE); 
+            }
         });
 
         btnPakai.addActionListener(e -> prosesStokDinamis(false)); 
@@ -264,7 +268,10 @@ public class MainFrame extends JFrame {
             int row = tabelStok.getSelectedRow(); if (row == -1) { JOptionPane.showMessageDialog(this, "Pilih barang di tabel!"); return; }
             int modelRow = tabelStok.convertRowIndexToModel(row);
             if (JOptionPane.showConfirmDialog(this, "Hapus barang ini dari lemari?", "Konfirmasi", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                try { DatabaseHelper.hapusStok(Integer.parseInt(tabelStok.getModel().getValueAt(modelRow, 0).toString())); refreshStokTabel(); } catch (Exception ex) {}
+                try { DatabaseHelper.hapusStok(Integer.parseInt(tabelStok.getModel().getValueAt(modelRow, 0).toString())); refreshStokTabel(); } catch (Exception ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Gagal hapus: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
@@ -303,7 +310,10 @@ public class MainFrame extends JFrame {
             }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Masukkan angka yang valid!", "Error", JOptionPane.ERROR_MESSAGE);
-        } catch (Exception ex) { }
+        } catch (Exception ex) { 
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Gagal update stok: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     // =========================================
@@ -323,24 +333,22 @@ public class MainFrame extends JFrame {
         
         // --- 2A. Bagian Grafik ---
         JPanel pnlChartArea = new JPanel(new BorderLayout(0, 15)); pnlChartArea.setOpaque(false);
-        // Mengatur batas tinggi grafik agar tidak melar dan memakan layar
         pnlChartArea.setPreferredSize(new Dimension(800, 360));
         pnlChartArea.setMaximumSize(new Dimension(2000, 360));
         
         RoundedPanel pnlInsight = new RoundedPanel(15, new Color(238, 242, 255)); 
         pnlInsight.setLayout(new BorderLayout(0, 10)); pnlInsight.setBorder(new EmptyBorder(15, 20, 15, 20));
         lblInsightSmarter = new JLabel("Memuat insight..."); lblInsightSmarter.setFont(fontUtama); lblInsightSmarter.setForeground(primaryHover);
-        JLabel lblHeaderInsight = new JLabel("Smart Insight AI"); lblHeaderInsight.setFont(fontCardTitle); lblHeaderInsight.setForeground(primaryColor);
+        JLabel lblHeaderInsight = new JLabel("Insight"); lblHeaderInsight.setFont(fontCardTitle); lblHeaderInsight.setForeground(primaryColor);
         pnlInsight.add(lblHeaderInsight, BorderLayout.NORTH); pnlInsight.add(lblInsightSmarter, BorderLayout.CENTER);
 
         pnlChartBar = new JPanel(); pnlChartBar.setLayout(new BoxLayout(pnlChartBar, BoxLayout.Y_AXIS)); pnlChartBar.setOpaque(false);
         
         pnlChartArea.add(pnlInsight, BorderLayout.NORTH);
-        pnlChartArea.add(pnlChartBar, BorderLayout.CENTER); // Langsung pasang pnlChartBar tanpa inner-scroll agar bersih
+        pnlChartArea.add(pnlChartBar, BorderLayout.CENTER); 
 
         // --- 2B. Bagian Histori (Ledger) ---
         JPanel pnlHistoriArea = new JPanel(new BorderLayout(0, 10)); pnlHistoriArea.setOpaque(false);
-        // Mengatur batas tinggi tabel histori
         pnlHistoriArea.setPreferredSize(new Dimension(800, 400));
         pnlHistoriArea.setMaximumSize(new Dimension(2000, 400));
         
@@ -380,7 +388,10 @@ public class MainFrame extends JFrame {
                     DatabaseHelper.hapusTransaksi(idTransaksi); 
                     refreshAnalitik(); 
                     JOptionPane.showMessageDialog(this, "Transaksi berhasil dihapus!");
-                } catch (Exception ex) { JOptionPane.showMessageDialog(this, "Gagal menghapus data!"); }
+                } catch (Exception ex) { 
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Gagal menghapus data! " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); 
+                }
             }
         });
         
@@ -391,7 +402,7 @@ public class MainFrame extends JFrame {
 
         // Gabungkan ke Panel Tengah
         pnlTengah.add(pnlChartArea);
-        pnlTengah.add(Box.createRigidArea(new Dimension(0, 35))); // Jarak nafas antara grafik dan histori
+        pnlTengah.add(Box.createRigidArea(new Dimension(0, 35))); 
         pnlTengah.add(pnlHistoriArea);
 
         // MEMBUAT SELURUH PANEL TENGAH BISA DI-SCROLL
@@ -399,7 +410,7 @@ public class MainFrame extends JFrame {
         scrollUtama.setBorder(null);
         scrollUtama.setOpaque(false);
         scrollUtama.getViewport().setOpaque(false);
-        scrollUtama.getVerticalScrollBar().setUnitIncrement(16); // Bikin scroll wheel mouse mulus
+        scrollUtama.getVerticalScrollBar().setUnitIncrement(16); 
 
         content.add(scrollUtama, BorderLayout.CENTER);
         
@@ -448,7 +459,6 @@ public class MainFrame extends JFrame {
             }
             pnlChartBar.revalidate(); pnlChartBar.repaint();
             
-            // Refresh Tabel Histori yang ada di bawahnya
             refreshHistoriTabel();
             
         } catch (Exception e) { lblInsightSmarter.setText("Gagal muat analitik."); }
@@ -523,7 +533,12 @@ public class MainFrame extends JFrame {
             try {
                 if (JOptionPane.showConfirmDialog(this, "Yakin hapus SEMUA data?", "Konfirmasi 1", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION && 
                     JOptionPane.showConfirmDialog(this, "TIDAK BISA DIBATALKAN! Lanjut?", "Konfirmasi 2", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE) == JOptionPane.YES_OPTION) {
-                    DatabaseHelper.resetSemuaData(); JOptionPane.showMessageDialog(this, "Sistem Direset."); refreshTabel(); refreshStokTabel(); refreshHistoriTabel();
+                    DatabaseHelper.resetSemuaData(); 
+                    DatabaseHelper.updateNamaUser("Pengguna Baru");
+                    JOptionPane.showMessageDialog(this, "Sistem Direset."); 
+                    refreshTabel(); refreshStokTabel(); refreshHistoriTabel();
+                    cardLayout.show(mainContentPanel, "Dashboard"); // Kembali ke Overview
+                    cekPenggunaBaru(); // Panggil ulang untuk input nama
                 }
             } catch (Exception ex) {}
         });
@@ -546,16 +561,25 @@ public class MainFrame extends JFrame {
     }
 
     private void cekPenggunaBaru() {
-        try { if (DatabaseHelper.getBudgetGlobal() == 0) {
-            String nama = JOptionPane.showInputDialog(this, "Welcome to LOKOST!\nSiapa namamu?", "Setup", JOptionPane.QUESTION_MESSAGE);
-            DatabaseHelper.updateNamaUser((nama != null && !nama.trim().isEmpty()) ? nama : "User");
-            JOptionPane.showMessageDialog(this, "Halo " + DatabaseHelper.getNamaUser() + "!\nSilakan atur budget di menu Settings.", "Welcome", JOptionPane.INFORMATION_MESSAGE); 
-        } } catch (Exception e) {}
+        try {
+            boolean namaBaruDiinput = false;
+            while ("Pengguna Baru".equals(DatabaseHelper.getNamaUser()) || DatabaseHelper.getNamaUser().trim().isEmpty()) {
+                String nama = JOptionPane.showInputDialog(this, "Welcome to LOKOST!\nSiapa namamu?", "Setup", JOptionPane.QUESTION_MESSAGE);
+                if (nama != null && !nama.trim().isEmpty()) {
+                    DatabaseHelper.updateNamaUser(nama);
+                    namaBaruDiinput = true;
+                    break;
+                }
+                // Jika cancel atau kosong, loop lagi sampai input valid
+            }
+            if (namaBaruDiinput && DatabaseHelper.getBudgetGlobal() == 0) {
+                JOptionPane.showMessageDialog(this, "Halo " + DatabaseHelper.getNamaUser() + "!\nSilakan atur budget di menu Settings.", "Welcome", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception e) {}
     }
 
     private void refreshTabel() { try { tabelDashboard.setModel(DatabaseHelper.getDashboardTableModel()); } catch (Exception e) {} }
     
-    // Method khusus refresh tabel histori di bagian bawah Insight
     private void refreshHistoriTabel() {
         try {
             if (tabelHistori != null) {
@@ -618,7 +642,10 @@ public class MainFrame extends JFrame {
             txtNamaBarang.setText(""); txtNominal.setText(""); 
             txtTanggal.setText(java.time.LocalDate.now().toString()); 
             refreshTabel(); 
-        } catch (Exception ex) { JOptionPane.showMessageDialog(this, ex.getMessage(), "ALARM", JOptionPane.ERROR_MESSAGE); }
+        } catch (Exception ex) { 
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Gagal simpan transaksi: " + ex.getMessage(), "ALARM", JOptionPane.ERROR_MESSAGE); 
+        }
     }
 
     private void catatPengeluaranDariStok(String namaBarang, int qty) {
@@ -649,7 +676,10 @@ public class MainFrame extends JFrame {
                     cekPeringatanBudget(idKat, namaKategoriTerpilih);
                     refreshTabel(); 
                 }
-            } catch (Exception ex) { JOptionPane.showMessageDialog(this, "Error Input Harga!", "Error", JOptionPane.ERROR_MESSAGE); }
+            } catch (Exception ex) { 
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error Input Harga: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); 
+            }
         }
     }
 
