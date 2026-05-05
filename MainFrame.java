@@ -353,7 +353,7 @@ public class MainFrame extends JFrame {
         pnlHistoriArea.setMaximumSize(new Dimension(2000, 400));
         
         JPanel pnlSearchHistori = new JPanel(new BorderLayout(15, 0)); pnlSearchHistori.setOpaque(false);
-        JLabel lblSearchHistori = new JLabel("Buku Besar (Cari Transaksi):"); lblSearchHistori.setFont(fontCardTitle); lblSearchHistori.setForeground(textMuted);
+        JLabel lblSearchHistori = new JLabel("Histori (Cari Transaksi):"); lblSearchHistori.setFont(fontCardTitle); lblSearchHistori.setForeground(textMuted);
         JTextField txtSearchHistori = createWebTextField(); txtSearchHistori.setToolTipText("Ketik nama transaksi atau tanggal...");
         pnlSearchHistori.add(lblSearchHistori, BorderLayout.WEST); pnlSearchHistori.add(txtSearchHistori, BorderLayout.CENTER);
 
@@ -414,7 +414,7 @@ public class MainFrame extends JFrame {
 
         content.add(scrollUtama, BorderLayout.CENTER);
         
-        return createWebCard(content, "Analisis & Buku Besar", "Laporan AI pengeluaran 5 hari terakhir beserta seluruh riwayat transaksi di bawah (Scroll).");
+        return createWebCard(content, "Analisis & Histori", "Laporan pengeluaran 5 hari terakhir beserta seluruh riwayat transaksi di bawah (Scroll).");
     }
 
     private JPanel createMiniCard(String title, String value, Color valueColor) {
