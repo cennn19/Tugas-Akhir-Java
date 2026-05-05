@@ -588,7 +588,10 @@ public class MainFrame extends JFrame {
                 sorterHistori = new TableRowSorter<>(model);
                 tabelHistori.setRowSorter(sorterHistori);
             }
+            DatabaseHelper.getTransaksiBerkategoriAktif();
+            
         } catch (Exception e) {} 
+        
     }
 
     private void refreshStokTabel() { 

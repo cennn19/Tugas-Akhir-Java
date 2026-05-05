@@ -380,4 +380,31 @@ public class DatabaseHelper {
             pstmt.executeUpdate();
         }
     }
+
+    public static DefaultTableModel getTransaksiBerkategoriAktif() throws Exception {
+    String[] kolom = {"ID", "Tanggal", "Nama Transaksi", "Nominal"};
+    DefaultTableModel model = new DefaultTableModel(kolom, 0) {
+        @Override
+        public boolean isCellEditable(int row, int column) { return false; }
+    };
+    String sql = "SELECT t.id, t.tanggal, t.nama_barang, t.nominal " +
+                 "FROM transaksi t " +
+                 "WHERE t.id_kategori IN ( " +
+                 "    SELECT id FROM kategori WHERE batas_anggaran > 0 " +
+                 ") " +
+                 "ORDER BY t.tanggal DESC";
+    try (Connection conn = getConnection();
+         Statement stmt = conn.createStatement();
+         ResultSet rs = stmt.executeQuery(sql)) {
+        while (rs.next()) {
+            model.addRow(new Object[]{
+                rs.getInt("id"),
+                rs.getString("tanggal"),
+                rs.getString("nama_barang"),
+                "Rp " + String.format("%,.0f", rs.getDouble("nominal")).replace(",", ".")
+            });
+        }
+    }
+    return model;
+}
 }
