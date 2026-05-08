@@ -1,5 +1,1 @@
-Kelompok Lokost
-
-Mohammad Nugroho Candy Pratama is the greatest of all time -> GOAT
-
-bruhhh
+Kelompok 3 - Tugas Akhir PBO dan Basis Data
